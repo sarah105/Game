@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Game_Models.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,7 @@ namespace Game_DataAccess.Data
     public class GameDbContext:DbContext
     {
         public GameDbContext(DbContextOptions <GameDbContext> options):base(options) { }
+
+        public DbSet<Account> Accounts { get; set; }
     }
 }

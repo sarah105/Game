@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Game_DataAccess.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Game
 {
@@ -28,6 +30,10 @@ namespace Game
         {
 
             services.AddControllers();
+            services.AddDbContext<GameDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("ConSql"));
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Game", Version = "v1" });

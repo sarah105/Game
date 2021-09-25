@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Game_DataAccess.Repositories
 {
-    class AccountRepository : IRepository<Account>
+    public class AccountRepository : IRepository<Account>
     {
         private readonly GameDbContext db;
 

@@ -13,6 +13,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Game_DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
+using Game_DataAccess.Repositories;
+using Game_Models.Models;
+using Game.Mapper;
 
 namespace Game
 {
@@ -34,10 +37,19 @@ namespace Game
             {
                 options.UseSqlServer(Configuration.GetConnectionString("ConSql"));
             });
+            services.AddAutoMapper(typeof(GameMapper));
+            services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV");
+            services.AddApiVersioning(options =>
+            {
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.ReportApiVersions = true;
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Game", Version = "v1" });
             });
+            services.AddScoped<IRepository<Account>, AccountRepository> ();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 
 namespace Game_Models.Models
 {
-    public class Account
+    public class AccountDto
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         public string Email { get; set; }
 

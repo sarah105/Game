@@ -33,10 +33,12 @@ namespace Game
         {
 
             services.AddControllers();
+
             services.AddDbContext<GameDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("ConSql"));
             });
+
             services.AddAutoMapper(typeof(GameMapper));
             services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV");
             services.AddApiVersioning(options =>
@@ -49,7 +51,7 @@ namespace Game
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Game", Version = "v1" });
             });
-            services.AddScoped<IRepository<Account>, AccountRepository> ();
+            services.AddScoped<IAccountRepository, AccountRepository> ();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

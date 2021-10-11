@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Game_DataAccess.Repositories
 {
-    public class AccountRepository : IRepository<Account>
+    public class AccountRepository : IAccountRepository
     {
         private readonly GameDbContext db;
 
@@ -16,10 +16,11 @@ namespace Game_DataAccess.Repositories
         {
             this.db = db;
         }
-        public bool Add(Account account)
+        public Account Add(Account account)
         {
             db.Accounts.Add(account);
-            return Save();
+            if (Save()) return account;
+            return null;
         }
 
         public bool Delete(Account account)
@@ -31,6 +32,12 @@ namespace Game_DataAccess.Repositories
         public Account Find(int id)
         {
             var account = db.Accounts.SingleOrDefault(item => item.Id == id);
+            return account;
+        }
+
+        public Account Find(string email)
+        {
+            var account = db.Accounts.SingleOrDefault(item => item.Email == email);
             return account;
         }
 

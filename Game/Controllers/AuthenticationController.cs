@@ -14,28 +14,36 @@ namespace Game.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly IRepository<Account> accountRepository;
+        private readonly IAccountRepository accountRepository;
         private readonly IMapper maper;
 
-        public AuthenticationController(IRepository <Account> accountRepository, IMapper maper)
+        public AuthenticationController(IAccountRepository accountRepository, IMapper maper)
         {
             this.accountRepository = accountRepository;
             this.maper = maper;
         }
-
+        //[Authorize] say that to access this fun you must have auth
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult Register([FromBody] AccountDto account)
         {
             if (account == null) return BadRequest();
             Account accountObj = maper.Map<Account>(account);
-            /*if (accountRepository.Find(account.Email) != null)
+            if (accountRepository.Find(account.Email) != null)
                 return NotFound("Email Already Exist");
-            if (accountRepository.Find(account.UserName) != null)
-                return NotFound("User Name Already Exist");
+            /*if (accountRepository.Find(account.UserName) != null)
+                return NotFound("User Name Already Exist");*/
             Account _account = accountRepository.Add(accountObj);
-            _account.Password = "";*/
-            return Ok(account);
+            _account.Password = "";
+            return Ok(_account);
+        }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult Get()
+        {
+            List <Account> accounts = accountRepository.List().ToList();
+            return Ok(accounts);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace Game_Models.Models
     public class AccountDto
     {
         [Required]
+        [EmailAddress]
         public string Email { get; set; }
 
         [Required]

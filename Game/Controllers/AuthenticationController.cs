@@ -1,48 +1,89 @@
 ﻿using AutoMapper;
+using Game.Services;
 using Game_DataAccess.Repositories;
 using Game_Models.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Game.Controllers
 {
-    [Route("api/v{version:apiVersion}/authentication")]
     [ApiController]
+    [ApiConventionType(typeof(DefaultApiConventions))]
+    [Route("api/v{version:apiVersion}")]
+
     public class AuthenticationController : ControllerBase
     {
-        private readonly IAccountRepository accountRepository;
         private readonly IMapper maper;
+        private readonly IAuthService authService;
+        private readonly IAccountRepository accountRepository;
 
-        public AuthenticationController(IAccountRepository accountRepository, IMapper maper)
+        public AuthenticationController(IMapper maper, IAuthService authService, IAccountRepository accountRepository)
         {
-            this.accountRepository = accountRepository;
             this.maper = maper;
+            this.authService = authService;
+            this.accountRepository = accountRepository;
         }
         //[Authorize] say that to access this fun you must have auth
         [HttpPost("register")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public IActionResult Register([FromBody] AccountDto account)
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult Register([FromBody] AccountDto account)
         {
-            if (account == null) return BadRequest();
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             Account accountObj = maper.Map<Account>(account);
-            if (accountRepository.Find(account.Email) != null)
-                return NotFound("Email Already Exist");
-            /*if (accountRepository.Find(account.UserName) != null)
-                return NotFound("User Name Already Exist");*/
-            Account _account = accountRepository.Add(accountObj);
-            _account.Password = "";
-            return Ok(_account);
+            //accountObj.Password = BCrypt.Net.BCrypt.HashPassword()
+            Auth auth = authService.Register(accountObj);
+            if (!auth.IsAuthenticated)
+            {
+                return NotFound(auth.Message);
+            }
+            return Ok(new { auth.Token, auth.Account });
         }
 
+        [HttpPost("login")]
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult Login([FromBody] LoginModelDto loginModel)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            Auth auth = authService.Login(loginModel);
+            if(!auth.IsAuthenticated) return NotFound(auth.Message);
+
+            return Ok(new { auth.Token, auth.Account });
+        }
+
+        [Authorize]
+        [HttpGet("account")]
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
+        public ActionResult GetAccount()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                IEnumerable<Claim> claims = identity.Claims;
+                // or
+                var userId = identity.FindFirst("uid").Value;
+                Account account = accountRepository.Find(int.Parse(userId));
+                if (account == null) return NotFound("Something went wrong!");
+                return Ok(account);
+            }
+            return Unauthorized("Unauthorized!");
+        }
+
+        //[Authorize]
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public IActionResult Get()
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult Get()
         {
             List <Account> accounts = accountRepository.List().ToList();
+            if(accounts == null) return BadRequest("Something went wrong!");
             return Ok(accounts);
         }
     }

@@ -35,9 +35,15 @@ namespace Game_DataAccess.Repositories
             return account;
         }
 
-        public Account Find(string email)
+        public Account FindByEmail(string email)
         {
             var account = db.Accounts.SingleOrDefault(item => item.Email == email);
+            return account;
+        }
+
+        public Account FindByUsername(string username)
+        {
+            var account = db.Accounts.SingleOrDefault(item => item.UserName == username);
             return account;
         }
 

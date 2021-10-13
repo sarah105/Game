@@ -16,6 +16,11 @@ using Microsoft.EntityFrameworkCore;
 using Game_DataAccess.Repositories;
 using Game_Models.Models;
 using Game.Mapper;
+using Game.Helpers;
+using Game.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Game
 {
@@ -39,7 +44,35 @@ namespace Game
                 options.UseSqlServer(Configuration.GetConnectionString("ConSql"));
             });
 
+            services.AddScoped<IAccountRepository, AccountRepository>();
+
+            //for jwt to map values from app setting to class
+            services.Configure<JWT>(Configuration.GetSection("JWT"));
+            services.AddScoped<IAuthService, AuthService>();//to use this class in controler
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+               .AddJwtBearer(o =>
+               {
+                   o.RequireHttpsMetadata = false;
+                   o.SaveToken = false;
+                   o.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       ValidateIssuerSigningKey = true,
+                       ValidateIssuer = true,
+                       ValidateAudience = true,
+                       ValidateLifetime = true,
+                       ValidIssuer = Configuration["JWT:Issuer"],
+                       ValidAudience = Configuration["JWT:Audience"],
+                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
+                   };
+               });
+
+
             services.AddAutoMapper(typeof(GameMapper));
+
             services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV");
             services.AddApiVersioning(options =>
             {
@@ -47,11 +80,12 @@ namespace Game
                 options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.ReportApiVersions = true;
             });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Game", Version = "v1" });
             });
-            services.AddScoped<IAccountRepository, AccountRepository> ();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,6 +102,8 @@ namespace Game
 
             app.UseRouting();
 
+            //for dentity but i didn't use 
+            app.UseAuthentication();//so check
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -13,7 +13,8 @@ namespace Game_DataAccess.Repositories
         Account Add(Account account);
         bool Delete(Account account);
         Account Find(int id);
-        Account Find(string email);
+        Account FindByEmail(string email);
+        Account FindByUsername(string username);
         bool Update(Account account);
     }
 }

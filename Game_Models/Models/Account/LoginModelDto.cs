@@ -7,19 +7,12 @@ using System.Threading.Tasks;
 
 namespace Game_Models.Models
 {
-    public class Account
+    public class LoginModelDto
     {
-        [Key]
-        public int Id { get; set; }
-
-        [Required]
-        [EmailAddress]
+        [Required,EmailAddress]
         public string Email { get; set; }
 
-        [Required]
+        [Required, MaxLength(24), MinLength(8)]
         public string Password { get; set; }
-
-        [Required]
-        public string UserName { get; set; }
     }
 }

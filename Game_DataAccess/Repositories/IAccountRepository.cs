@@ -12,7 +12,7 @@ namespace Game_DataAccess.Repositories
         IList<Account> List();
         Account Add(Account account);
         bool Delete(Account account);
-        Account Find(int id);
+        Account FindById(int id);
         Account FindByEmail(string email);
         Account FindByUsername(string username);
         bool Update(Account account);

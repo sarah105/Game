@@ -32,7 +32,7 @@ namespace Game.Services
             {
                 return new Auth { Message = "Email is already registered!" };
             }
-            if (accountRepository.FindByUsername(account.UserName) != null)
+            if (accountRepository.FindByUsername(account.Username) != null)
             {
                 return new Auth { Message = "Username is already registered!" };
             }

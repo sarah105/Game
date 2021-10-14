@@ -45,10 +45,10 @@ namespace Game
             });
 
             services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IAuthService, AuthService>();//to use this class in controler
 
             //for jwt to map values from app setting to class
             services.Configure<JWT>(Configuration.GetSection("JWT"));
-            services.AddScoped<IAuthService, AuthService>();//to use this class in controler
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -73,6 +73,7 @@ namespace Game
 
             services.AddAutoMapper(typeof(GameMapper));
 
+            //for VersionedApi
             services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV");
             services.AddApiVersioning(options =>
             {

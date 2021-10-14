@@ -29,7 +29,7 @@ namespace Game_DataAccess.Repositories
             return Save();
         }
 
-        public Account Find(int id)
+        public Account FindById(int id)
         {
             var account = db.Accounts.SingleOrDefault(item => item.Id == id);
             return account;
@@ -43,7 +43,7 @@ namespace Game_DataAccess.Repositories
 
         public Account FindByUsername(string username)
         {
-            var account = db.Accounts.SingleOrDefault(item => item.UserName == username);
+            var account = db.Accounts.SingleOrDefault(item => item.Username == username);
             return account;
         }
 
@@ -52,9 +52,9 @@ namespace Game_DataAccess.Repositories
             return db.Accounts.ToList();
         }
 
-        public bool Update(Account entity)
+        public bool Update(Account account)
         {
-            db.Accounts.Update(entity);
+            db.Accounts.Update(account);
             return Save();
         }
         private bool Save()

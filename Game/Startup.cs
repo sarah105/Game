@@ -13,6 +13,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Game_DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
+using Game_DataAccess.Repositories;
+using Game_Models.Models;
+using Game.Mapper;
+using Game.Helpers;
+using Game.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Game.Mapper;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -33,10 +41,38 @@ namespace Game
         {
 
             services.AddControllers();
+
             services.AddDbContext<GameDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("ConSql"));
             });
+
+            services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IAuthService, AuthService>();//to use this class in controler
+
+            //for jwt to map values from app setting to class
+            services.Configure<JWT>(Configuration.GetSection("JWT"));
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+               .AddJwtBearer(o =>
+               {
+                   o.RequireHttpsMetadata = false;
+                   o.SaveToken = false;
+                   o.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       ValidateIssuerSigningKey = true,
+                       ValidateIssuer = true,
+                       ValidateAudience = true,
+                       ValidateLifetime = true,
+                       ValidIssuer = Configuration["JWT:Issuer"],
+                       ValidAudience = Configuration["JWT:Audience"],
+                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
+                   };
+               });
+
 
             services.AddAutoMapper(typeof(GameMapper));
 
@@ -72,6 +108,8 @@ namespace Game
 
             app.UseRouting();
 
+            //for dentity but i didn't use 
+            app.UseAuthentication();//so check
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

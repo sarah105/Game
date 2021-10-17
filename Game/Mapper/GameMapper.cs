@@ -1,8 +1,5 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Game_Models.Models;
 
 namespace Game.Mapper
 {
@@ -10,7 +7,7 @@ namespace Game.Mapper
     {
         public GameMapper()
         {
-            //CreateMap<Account, AccountDto>().ReverseMap();
+            CreateMap<Account, AccountDto>().ReverseMap();
         }
     }
 }

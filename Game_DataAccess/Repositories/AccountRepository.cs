@@ -1,5 +1,6 @@
 ﻿using Game_DataAccess.Data;
 using Game_Models.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,26 +32,26 @@ namespace Game_DataAccess.Repositories
 
         public Account FindById(int id)
         {
-            var account = db.Accounts.SingleOrDefault(item => item.Id == id);
+            var account = db.Accounts.AsNoTracking().SingleOrDefault(item => item.Id == id);
             return account;
         }
 
         public Account FindByEmail(string email)
         {
-            var account = db.Accounts.SingleOrDefault(item => item.Email == email);
+            var account = db.Accounts.AsNoTracking().SingleOrDefault(item => item.Email == email);
             return account;
         }
 
         public Account FindByUsername(string username)
         {
-            var account = db.Accounts.SingleOrDefault(item => item.Username == username);
+            var account = db.Accounts.AsNoTracking().SingleOrDefault(item => item.Username == username);
             return account;
         }
 
         public IList<Account> List()
         {
             return db.Accounts.ToList();
-        }
+        } 
 
         public bool Update(Account account)
         {

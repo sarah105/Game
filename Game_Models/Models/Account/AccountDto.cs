@@ -17,6 +17,6 @@ namespace Game_Models.Models
         public string Password { get; set; }
 
         [Required,MinLength(3),MaxLength(30)]
-        public string UserName { get; set; }
+        public string Username { get; set; }
     }
 }

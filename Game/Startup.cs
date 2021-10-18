@@ -24,6 +24,8 @@ using System.Text;
 using Game.Mapper;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Game_DataAccess.Repositories.IRepositories;
+using Game_Models.Models.Card;
 
 namespace Game
 {
@@ -49,6 +51,7 @@ namespace Game
 
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IAuthService, AuthService>();//to use this class in controler
+            services.AddScoped<ICURT<Card>, CardRepository>();
 
             //for jwt to map values from app setting to class
             services.Configure<JWT>(Configuration.GetSection("JWT"));

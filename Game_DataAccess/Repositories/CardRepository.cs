@@ -1,6 +1,7 @@
 ﻿using Game_DataAccess.Data;
 using Game_DataAccess.Repositories.IRepositories;
 using Game_Models.Models.Card;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Game_DataAccess.Repositories
 {
-    class CardRepository : ICURT<Card>
+    public class CardRepository : ICURT<Card>
     {
         private readonly GameDbContext db;
 
@@ -18,29 +19,36 @@ namespace Game_DataAccess.Repositories
             this.db = db;
         }
 
-        public Card Add(Card entity)
+        public Card Add(Card card)
         {
-            throw new NotImplementedException();
+            db.Cards.Add(card);
+            if (Save()) return card;
+            return null;
         }
 
         public Card Find(int id)
         {
-            throw new NotImplementedException();
+            Card card = db.Cards.AsNoTracking().FirstOrDefault(ele => ele.Id == id);// get more info about .AsNoTracking()
+            return card;
         }
 
         public IList<Card> List()
         {
-            throw new NotImplementedException();
+            return db.Cards.ToList();
         }
 
-        public bool Remove(Card entity)
+        public bool Delete(Card card)
         {
-            throw new NotImplementedException();
+            db.Cards.Remove(card);
+            return Save();
+
         }
 
-        public Card Update(Card entity)
+        public bool Update(Card card)
         {
-            throw new NotImplementedException();
+            db.Cards.Update(card);
+            //if (Save()) return card;
+            return Save();
         }
 
         private bool Save()

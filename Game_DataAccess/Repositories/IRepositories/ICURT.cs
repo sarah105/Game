@@ -11,7 +11,7 @@ namespace Game_DataAccess.Repositories.IRepositories
         IList<IEntity> List();
         IEntity Find(int id);
         IEntity Add(IEntity entity);
-        bool Remove(IEntity entity);
-        IEntity Update(IEntity entity);
+        bool Delete(IEntity entity);
+        bool Update(IEntity entity);
     }
 }

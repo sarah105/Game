@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Game.Controllers
 {
-    [Route("api/v{version:apiVersion}/[controller]")]
+    [Route("api/v{version:apiVersion}/account")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -26,7 +26,7 @@ namespace Game.Controllers
         }
 
         [Authorize]
-        [HttpGet("account")]
+        [HttpGet]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
         public ActionResult GetAccount()
         {
@@ -43,7 +43,7 @@ namespace Game.Controllers
         }
 
         [Authorize]
-        [HttpGet("update")]
+        [HttpPost("update")]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
         public ActionResult Update([FromBody] AccountDto accountDto)
         {
@@ -56,16 +56,17 @@ namespace Game.Controllers
                 Account account = accountRepository.FindById(userId);
                 if (account == null) return NotFound("Something went wrong!");
 
-                Account accountObj = maper.Map<Account>(account);
+                Account accountObj = maper.Map<Account>(accountDto);
                 accountObj.Id = userId;
+                accountObj.Password = account.Password;
                 bool isUpdate = accountRepository.Update(accountObj);
                 if (!isUpdate) return BadRequest("Something went wrong!");
-                return Ok(accountObj);
+                return NoContent();
             }
             return Unauthorized("Unauthorized!");
         }
         //[Authorize]
-        [HttpGet("accounts")]
+        [HttpGet("all")]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
         //[ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult Get()
